@@ -12,6 +12,8 @@ class ImagePlayer {
         img.src =
             'data:image/jpeg;base64,' +
             btoa(String.fromCharCode.apply(null, imageData))
+
+        console.log('img.src', img.src)
     }
 }
 

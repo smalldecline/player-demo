@@ -1,5 +1,6 @@
 import PCMPlayer from './PCMPlayer'
 import ImagePlayer from './ImagePlayer'
+import WebGLPlayer from './webglPlayer'
 
 /**
  *  VideoPacket
@@ -26,7 +27,7 @@ class Player {
     msPerFrame = 40
 
     constructor(canvas) {
-        this.videoPlayer = new ImagePlayer(canvas)
+        this.videoPlayer = new WebGLPlayer(canvas)
         this.audioPlayer = new PCMPlayer({
             inputCodec: 'Int16',
             channels: 1,
@@ -34,8 +35,6 @@ class Player {
             flushTime: 200,
         })
     }
-
-    init() {}
 
     async read(buffer) {}
 
