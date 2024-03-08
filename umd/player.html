@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>WebSocket Video and Audio Rendering</title>
+    </head>
+    <body>
+        <canvas id="videoCanvas" width="720" height="1280"></canvas>
+        <button onclick="loadPCM()">PlayPCM</button>
+        <script type="text/javascript" src="./index.js"></script>
+        <script>
+            window.loadPCM = function loadPCM() {
+                // 建立 WebSocket 连接
+                const socket = new WebSocket('ws://nas.maituai.com:15888/ws')
+
+                // 获取 Canvas 和音频播放器
+                const canvas = document.getElementById('videoCanvas')
+                const ctx = canvas.getContext('2d')
+                const player = new PCMPlayer({
+                    inputCodec: 'Int16',
+                    channels: 1,
+                    sampleRate: 16000,
+                    flushTime: 200,
+                })
+                // 处理 WebSocket 数据
+
+                socket.onmessage = function (event) {
+                    event.data.arrayBuffer().then((buffer) => {
+                        let audioData = new Int16Array(buffer, 0, 640)
+                        let audioDataCopy = new Int16Array(640)
+                        audioDataCopy.set(audioData)
+                        console.log(audioDataCopy)
+                        player.feed(audioDataCopy)
+                        let imageData = new Uint8Array(buffer, 1280)
+                        const img = new Image()
+                        img.onload = function () {
+                            ctx.drawImage(
+                                img,
+                                0,
+                                0,
+                                canvas.width,
+                                canvas.height
+                            )
+                        }
+                        img.src =
+                            'data:image/jpeg;base64,' +
+                            btoa(String.fromCharCode.apply(null, imageData))
+                    })
+                }
+            }
+        </script>
+    </body>
+</html>
